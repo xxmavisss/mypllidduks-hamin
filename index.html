@@ -491,7 +491,7 @@ main{ position:relative; z-index:1; }
 
 /* Subtler Watermark & Clean Modern Vintage Spacing */
 .pass-center{
-  flex:1; position:relative; display:flex; align-items:center; justify-content:center; min-height:0; margin: 10px 0;
+  flex:1; position:relative; display:flex; align-items:flex-end; justify-content:center; min-height:0; margin: 10px 0;
 }
 .pass-watermark{
   width:56%; max-width:170px; aspect-ratio: 419 / 889; opacity:.16;
@@ -502,8 +502,28 @@ main{ position:relative; z-index:1; }
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   filter: drop-shadow(0 0 12px rgba(34,166,110,.3));
-  transform: translateY(18%);
 }
+/* capture-safe fallback: html2canvas can't render CSS mask-image or
+   background-clip:text, so we swap to an equivalent it CAN render
+   just for the moment the export snapshot is taken */
+.pass-card.capture-safe .pass-watermark{
+  background-color: transparent !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  background-image: var(--hamin-silhouette) !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+.pass-card.capture-safe .pass-brand,
+.pass-card.capture-safe .pass-name{
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+.pass-card.capture-safe .pass-brand{ color: var(--foil-light, var(--champagne-gold-light)) !important; }
+.pass-card.capture-safe .pass-name{ color: var(--silver) !important; }
 
 /* Stamp Seal Centered Badge */
 .pass-seal{
@@ -1461,6 +1481,9 @@ async function generatePassImage(){
   if(typeof html2canvas === 'undefined'){
     return null;
   }
+  passCard.classList.add('capture-safe');
+  /* force reflow so the swapped styles are committed before we snapshot */
+  void passCard.offsetHeight;
   try{
     const canvas = await html2canvas(passCard, {
       backgroundColor: null,
@@ -1472,6 +1495,8 @@ async function generatePassImage(){
   } catch(err){
     console.error('Card image export failed:', err);
     return null;
+  } finally {
+    passCard.classList.remove('capture-safe');
   }
 }
 
