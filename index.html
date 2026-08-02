@@ -960,7 +960,8 @@ main{ position:relative; z-index:1; }
           </div>
 
           <div class="action-row">
-            <button class="btn btn-primary" id="copyShareBtn">⎘ Copy Share Text</button>
+            <button class="btn btn-primary" id="postXBtn">𝕏 Post to X</button>
+            <button class="btn btn-ghost" id="copyShareBtn">⎘ Copy Share Text</button>
             <button class="btn btn-ghost" id="copyLinkBtn">🔗 Copy Invitation Link</button>
             <p class="field-note" style="text-align:center; margin-top:2px;">📸 Best saved as a screenshot — it captures the live glow &amp; matrix backdrop that a download can't. 🔗 Or share the link so friends see your invitation live, animations and all.</p>
           </div>
@@ -1450,6 +1451,17 @@ function copyText(text, successMsg){
     navigator.clipboard.writeText(text).then(() => showToast(successMsg)).catch(fallback);
   } else fallback();
 }
+
+document.getElementById('postXBtn').addEventListener('click', () => {
+  const name = passNameInput.value.trim() || 'PLLI';
+  const seat = passSeatEl.textContent;
+  const link = buildShareLink();
+  const text = "🐈\u200d⬛ " + name + " just claimed a Promenade Invitation for HAMIN · PROMENADE — " + seat + "\n\"" + CIPHER_TEXT + "\"";
+  const intentUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text)
+    + "&url=" + encodeURIComponent(link)
+    + "&hashtags=" + encodeURIComponent("LastDanceWithHamin");
+  window.open(intentUrl, '_blank', 'noopener,noreferrer');
+});
 
 document.getElementById('copyShareBtn').addEventListener('click', () => {
   const name = passNameInput.value.trim() || 'PLLI';
