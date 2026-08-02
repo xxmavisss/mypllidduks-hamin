@@ -518,21 +518,18 @@ main{ position:relative; z-index:1; }
   -webkit-mask-position: center; mask-position: center;
   filter: drop-shadow(0 0 12px rgba(34,166,110,.3));
 }
-/* capture-safe fallback: html2canvas can't render CSS mask-image or
-   background-clip:text, so we swap to an equivalent it CAN render
-   just for the moment the export snapshot is taken. Its own low
-   opacity also reads as nearly invisible once flattened into a
-   raster export, so we boost it for the snapshot only. */
+/* ROOT-CAUSE FIX: previously this swapped mask-image for
+   `background-image: var(--hamin-silhouette)` — a CSS custom property
+   holding a large base64 data URI referenced through var() inside url().
+   html2canvas can hang/fail trying to resolve that, which stalls the
+   whole export (leaving capture-safe stuck on the live card) and
+   produces a blank/black download. Simply hide the watermark during
+   export instead — far more reliable than trying to redraw it. */
 .pass-card.capture-safe .pass-watermark{
-  opacity: .4 !important;
-  filter: none !important;
-  background-color: transparent !important;
+  opacity: 0 !important;
   -webkit-mask-image: none !important;
   mask-image: none !important;
-  background-image: var(--hamin-silhouette) !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
+  background-color: transparent !important;
 }
 .pass-card.capture-safe .pass-brand,
 .pass-card.capture-safe .pass-name{
@@ -1517,15 +1514,23 @@ async function generatePassImage(){
     if(document.fonts && document.fonts.ready){
       await document.fonts.ready;
     }
-    const canvas = await html2canvas(passCard, {
-      /* BUG FIX 1: fixed dark background instead of transparent, since the
-         backdrop/blend effects that normally sit behind the card content
-         aren't rendered correctly by html2canvas */
-      backgroundColor: '#08090A',
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
+    /* SAFETY NET: if html2canvas ever stalls (e.g. on an unsupported CSS
+       resource), race it against a timeout so this function always
+       reaches `finally` and un-stucks the live card instead of leaving
+       capture-safe applied indefinitely. */
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('html2canvas timed out')), 8000));
+    const canvas = await Promise.race([
+      html2canvas(passCard, {
+        /* BUG FIX 1: fixed dark background instead of transparent, since the
+           backdrop/blend effects that normally sit behind the card content
+           aren't rendered correctly by html2canvas */
+        backgroundColor: '#08090A',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      }),
+      timeout
+    ]);
     return canvas;
   } catch(err){
     console.error('Card image export failed:', err);
