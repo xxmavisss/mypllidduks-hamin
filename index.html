@@ -477,6 +477,14 @@ main{ position:relative; z-index:1; }
   background: conic-gradient(from 200deg at 70% 20%, var(--silver-2), var(--foil-mid, var(--emerald-bright)), var(--obsidian), var(--silver-2));
   filter: blur(45px); transform: translateZ(0);
 }
+/* capture-safe swap: the conic-gradient above relies entirely on its
+   45px blur to hide the hard seam where the gradient wraps around —
+   html2canvas doesn't apply CSS blur, so that seam shows as a stray
+   line. Swap to a seamless radial-gradient just for the snapshot. */
+.pass-card.capture-safe .pass-trail{
+  filter: none !important;
+  background: radial-gradient(ellipse 90% 70% at 70% 20%, var(--silver-2), var(--foil-mid, var(--emerald-bright)) 45%, var(--obsidian) 78%) !important;
+}
 .pass-content{ position:relative; z-index:2; display:flex; flex-direction:column; height:100%; }
 .pass-top{ display:flex; justify-content:space-between; align-items:flex-start; }
 .pass-crest{ position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:.8rem; color: var(--foil-mid, var(--champagne-gold)); opacity:.7; letter-spacing:.06em; z-index:2; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
@@ -505,8 +513,12 @@ main{ position:relative; z-index:1; }
 }
 /* capture-safe fallback: html2canvas can't render CSS mask-image or
    background-clip:text, so we swap to an equivalent it CAN render
-   just for the moment the export snapshot is taken */
+   just for the moment the export snapshot is taken. Its own low
+   opacity also reads as nearly invisible once flattened into a
+   raster export, so we boost it for the snapshot only. */
 .pass-card.capture-safe .pass-watermark{
+  opacity: .4 !important;
+  filter: none !important;
   background-color: transparent !important;
   -webkit-mask-image: none !important;
   mask-image: none !important;
