@@ -492,12 +492,12 @@ main{ position:relative; z-index:1; }
 .pass-center{
   flex:1 1 0; position:relative; display:flex; align-items:flex-end; justify-content:center; min-height:0; overflow:hidden; margin: 10px 0;
 }
-/* This silhouette's natural aspect-ratio (419:889) is very tall, so capping
-   max-height here (mask-size:contain keeps it undistorted, just smaller)
-   keeps it from ever pushing pass-name/role/cipher/footer down and off
-   the bottom of the fixed-aspect-ratio card. */
+/* Positioned relative to .pass-content's padding box (314 x 528px available
+   area). Moved out of .pass-center's flex flow so it no longer affects the
+   layout/position of pass-name, pass-role, pass-cipher, pass-footer, etc. */
 .pass-watermark{
-  width:85%; max-width:315px; max-height:270px; aspect-ratio: 419 / 889; opacity:.16;
+  position:absolute; left:24px; top:108px;
+  width:278.7px; height:337px; opacity:.16;
   background-color: var(--foil-mid, var(--champagne-gold));
   -webkit-mask-image: var(--hamin-silhouette);
   mask-image: var(--hamin-silhouette);
@@ -505,6 +505,7 @@ main{ position:relative; z-index:1; }
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   filter: drop-shadow(0 0 12px rgba(34,166,110,.3));
+  z-index:0; pointer-events:none;
 }
 
 /* Stamp Seal Centered Badge */
@@ -982,6 +983,7 @@ main{ position:relative; z-index:1; }
             <div class="pass-trail"></div>
             <div class="pass-frame"></div>
             <div class="pass-content">
+              <div class="pass-watermark" aria-hidden="true"></div>
               <div class="pass-top">
                 <div class="pass-brand">HAMIN<br>PROMENADE</div>
                 <div class="pass-stamp-display" id="passStampDisplay">🐾</div>
@@ -990,7 +992,6 @@ main{ position:relative; z-index:1; }
               <div class="pass-seat" id="passSeat">#HM-1101-0000</div>
 
               <div class="pass-center">
-                <div class="pass-watermark" aria-hidden="true"></div>
                 <div class="pass-seal">
                   <span class="pass-seal-crest">♛</span>
                   <span class="pass-seal-no">GUEST NO.</span>
