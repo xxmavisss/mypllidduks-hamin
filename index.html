@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
 /* ============================================================
    TOKENS & BASE STYLES
@@ -410,17 +409,6 @@ main{ position:relative; z-index:1; }
 .preview-stage{ perspective: 1400px; display:flex; align-items:center; justify-content:center; padding: 20px 0; }
 
 /* MODERN VINTAGE INVITATION CARD */
-/* BUG FIX 3 (black screen on export): html2canvas does not support CSS 3D
-   transforms (rotateX/rotateY + transform-style:preserve-3d), especially
-   combined with the ancestor's `perspective`. It can compute a broken
-   transform matrix and render the element as blank/black. Flatten the
-   card to 2D for the snapshot — visually identical since --rx/--ry are
-   usually 0 anyway, but this removes the 3D context entirely so
-   html2canvas always has a normal, flat box to capture. */
-.pass-card.capture-safe{
-  transform: none !important;
-  transform-style: flat !important;
-}
 .pass-card{
   --mx:50%; --my:50%; --rx:0deg; --ry:0deg;
   --foil: linear-gradient(135deg, var(--champagne-gold-light) 0%, var(--champagne-gold) 50%, var(--champagne-gold-dark) 100%);
@@ -439,18 +427,6 @@ main{ position:relative; z-index:1; }
     radial-gradient(ellipse 100% 80% at 50% 0%, rgba(20,45,33,0.85), transparent 70%),
     linear-gradient(165deg, var(--card-bg-1, var(--emerald-paper-1)) 0%, var(--card-bg-2, #06110c) 50%, var(--card-bg-3, var(--emerald-paper-2)) 100%);
 }
-/* BUG FIX 4 (color/texture mismatch on export): html2canvas rasterizes each
-   background layer separately rather than using the GPU compositor the
-   live browser does, so 5 stacked semi-transparent gradients — especially
-   the ~4px repeating dot/line micro-textures — get averaged/aliased into
-   visibly different colors. Drop the micro-textures and cursor sheen for
-   the snapshot and keep only the two large, flat gradients that carry the
-   actual color identity of the card. */
-.pass-card.capture-safe{
-  background:
-    radial-gradient(ellipse 100% 80% at 50% 0%, rgba(20,45,33,0.85), transparent 70%),
-    linear-gradient(165deg, var(--card-bg-1, var(--emerald-paper-1)) 0%, var(--card-bg-2, #06110c) 50%, var(--card-bg-3, var(--emerald-paper-2)) 100%) !important;
-}
 
 /* Debossed Champagne Gold Stamping Borders */
 .pass-card::before{
@@ -461,13 +437,6 @@ main{ position:relative; z-index:1; }
 .pass-card::after{
   content:""; position:absolute; inset:0; pointer-events:none; mix-blend-mode: overlay; opacity:.6; z-index:3;
   background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.4), transparent 50%);
-}
-/* BUG FIX 1: html2canvas does not support mix-blend-mode and paints it as an
-   opaque wash instead of blending, throwing off the card's color/texture in
-   exported images. Disable this sheen layer only while capture-safe is active. */
-.pass-card.capture-safe::after{
-  mix-blend-mode: normal !important;
-  opacity: 0 !important;
 }
 .pass-frame{
   position:absolute; inset:18px; border-radius:8px; pointer-events:none; z-index:1;
@@ -507,14 +476,6 @@ main{ position:relative; z-index:1; }
   background: conic-gradient(from 200deg at 70% 20%, var(--silver-2), var(--foil-mid, var(--emerald-bright)), var(--obsidian), var(--silver-2));
   filter: blur(45px); transform: translateZ(0);
 }
-/* capture-safe swap: the conic-gradient above relies entirely on its
-   45px blur to hide the hard seam where the gradient wraps around —
-   html2canvas doesn't apply CSS blur, so that seam shows as a stray
-   line. Swap to a seamless radial-gradient just for the snapshot. */
-.pass-card.capture-safe .pass-trail{
-  filter: none !important;
-  background: radial-gradient(ellipse 90% 70% at 70% 20%, var(--silver-2), var(--foil-mid, var(--emerald-bright)) 45%, var(--obsidian) 78%) !important;
-}
 .pass-content{ position:relative; z-index:2; display:flex; flex-direction:column; height:100%; }
 .pass-top{ display:flex; justify-content:space-between; align-items:flex-start; flex-shrink:0; }
 .pass-crest{ position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:.8rem; color: var(--foil-mid, var(--champagne-gold)); opacity:.7; letter-spacing:.06em; z-index:2; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
@@ -531,17 +492,12 @@ main{ position:relative; z-index:1; }
 .pass-center{
   flex:1 1 0; position:relative; display:flex; align-items:flex-end; justify-content:center; min-height:0; overflow:hidden; margin: 10px 0;
 }
-/* BUG FIX 5 (missing footer / "VVVIP" not showing, text pushed around):
-   this silhouette's natural aspect-ratio (419:889) is very tall, so at its
-   own width (56%, capped 170px) it wants to render ~360px tall — taller
-   than the space actually available inside the fixed-aspect-ratio card.
-   That pushed pass-name/role/cipher/footer down and off the bottom edge,
-   which is why the footer text (VVVIP) disappeared. Capping max-height
-   here (mask-size:contain keeps the silhouette itself undistorted, just
-   smaller) is what actually fixes it; pass-center's own overflow:hidden
-   above is just a safety net in case anything still runs long. */
+/* This silhouette's natural aspect-ratio (419:889) is very tall, so capping
+   max-height here (mask-size:contain keeps it undistorted, just smaller)
+   keeps it from ever pushing pass-name/role/cipher/footer down and off
+   the bottom of the fixed-aspect-ratio card. */
 .pass-watermark{
-  width:56%; max-width:170px; max-height:120px; aspect-ratio: 419 / 889; opacity:.16;
+  width:85%; max-width:315px; max-height:270px; aspect-ratio: 419 / 889; opacity:.16;
   background-color: var(--foil-mid, var(--champagne-gold));
   -webkit-mask-image: var(--hamin-silhouette);
   mask-image: var(--hamin-silhouette);
@@ -549,35 +505,6 @@ main{ position:relative; z-index:1; }
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   filter: drop-shadow(0 0 12px rgba(34,166,110,.3));
-}
-/* ROOT-CAUSE FIX: previously this swapped mask-image for
-   `background-image: var(--hamin-silhouette)` — a CSS custom property
-   holding a large base64 data URI referenced through var() inside url().
-   html2canvas can hang/fail trying to resolve that, which stalls the
-   whole export (leaving capture-safe stuck on the live card) and
-   produces a blank/black download. Simply hide the watermark during
-   export instead — far more reliable than trying to redraw it. */
-.pass-card.capture-safe .pass-watermark{
-  opacity: 0 !important;
-  -webkit-mask-image: none !important;
-  mask-image: none !important;
-  background-color: transparent !important;
-}
-.pass-card.capture-safe .pass-brand,
-.pass-card.capture-safe .pass-name{
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  background-clip: initial !important;
-  -webkit-text-fill-color: currentColor !important;
-}
-.pass-card.capture-safe .pass-brand{ color: var(--foil-light, var(--champagne-gold-light)) !important; }
-.pass-card.capture-safe .pass-name{ color: var(--silver) !important; }
-/* BUG FIX 2: .pass-name's font-size uses clamp() with a vw-based preferred
-   value, which can resolve differently inside html2canvas's cloned render
-   context than in the live viewport, shifting/wrapping the text. Pin it to
-   a fixed rem size (matches the clamp's typical resolved value) for export. */
-.pass-card.capture-safe .pass-name{
-  font-size: 1.6rem !important;
 }
 
 /* Stamp Seal Centered Badge */
@@ -1046,9 +973,7 @@ main{ position:relative; z-index:1; }
 
           <div class="action-row">
             <button class="btn btn-primary" id="postXBtn">𝕏 Post to X</button>
-            <button class="btn btn-ghost" id="copyShareBtn">⎘ Copy Share Text</button>
-            <button class="btn btn-ghost" id="copyLinkBtn">🔗 Copy Invitation Link</button>
-            <p class="field-note" style="text-align:center; margin-top:2px;">𝕏 Post to X saves a card image to your device and opens the tweet box — just attach the image before sending. 📸 For the best quality (with the live glow), a manual screenshot still works too.</p>
+            <p class="field-note" style="text-align:center; margin-top:2px;">📸 Screenshot your card — it looks best straight off the screen. Then tap "Post to X" to open a ready-made caption &amp; link, and attach your screenshot before sending.</p>
           </div>
         </div>
 
@@ -1519,69 +1444,7 @@ function buildShareLink(){
   return base + '?' + params.toString();
 }
 
-function copyText(text, successMsg){
-  const fallback = () => {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); showToast(successMsg); }
-    catch(e){ showToast('Could not copy — please copy manually.'); }
-    document.body.removeChild(ta);
-  };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(() => showToast(successMsg)).catch(fallback);
-  } else fallback();
-}
-
-async function generatePassImage(){
-  if(typeof html2canvas === 'undefined'){
-    return null;
-  }
-  passCard.classList.add('capture-safe');
-  /* force reflow so the swapped styles are committed before we snapshot */
-  void passCard.offsetHeight;
-  try{
-    /* BUG FIX 2: wait for Cinzel/Playfair Display/Inter to finish loading —
-       otherwise html2canvas can snapshot mid-swap while text is still
-       rendered in a system-font fallback, throwing off sizing/wrapping. */
-    if(document.fonts && document.fonts.ready){
-      await document.fonts.ready;
-    }
-    /* SAFETY NET: if html2canvas ever stalls (e.g. on an unsupported CSS
-       resource), race it against a timeout so this function always
-       reaches `finally` and un-stucks the live card instead of leaving
-       capture-safe applied indefinitely. */
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('html2canvas timed out')), 8000));
-    const canvas = await Promise.race([
-      html2canvas(passCard, {
-        /* BUG FIX 1: fixed dark background instead of transparent, since the
-           backdrop/blend effects that normally sit behind the card content
-           aren't rendered correctly by html2canvas */
-        backgroundColor: '#08090A',
-        scale: 2,
-        useCORS: true,
-        logging: false
-      }),
-      timeout
-    ]);
-    return canvas;
-  } catch(err){
-    console.error('Card image export failed:', err);
-    return null;
-  } finally {
-    passCard.classList.remove('capture-safe');
-  }
-}
-
-function downloadCanvas(canvas, filename){
-  const link = document.createElement('a');
-  link.download = filename;
-  link.href = canvas.toDataURL('image/png');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-document.getElementById('postXBtn').addEventListener('click', async () => {
+document.getElementById('postXBtn').addEventListener('click', () => {
   const name = passNameInput.value.trim() || 'PLLI';
   const seat = passSeatEl.textContent;
   const link = buildShareLink();
@@ -1589,34 +1452,8 @@ document.getElementById('postXBtn').addEventListener('click', async () => {
   const intentUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text)
     + "&url=" + encodeURIComponent(link)
     + "&hashtags=" + encodeURIComponent("LastDanceWithHamin");
-
-  /* open the X tab synchronously (within the click gesture) so popup blockers allow it,
-     then fill in its destination once the image is ready */
-  const xWin = window.open('', '_blank', 'noopener,noreferrer');
-
-  showToast('Preparing your invitation image…');
-  const canvas = await generatePassImage();
-  if(canvas){
-    downloadCanvas(canvas, 'hamin-promenade-' + name.replace(/\s+/g, '_') + '.png');
-    showToast('Image saved — attach it to your X post 📎');
-  } else {
-    showToast('Auto-export unavailable — please screenshot the card and attach it manually 📸');
-  }
-
-  if(xWin){ xWin.location.href = intentUrl; }
-  else { window.open(intentUrl, '_blank', 'noopener,noreferrer'); }
-});
-
-document.getElementById('copyShareBtn').addEventListener('click', () => {
-  const name = passNameInput.value.trim() || 'PLLI';
-  const seat = passSeatEl.textContent;
-  const link = buildShareLink();
-  const text = "🐈\u200d⬛ " + name + " just claimed a Promenade Invitation for HAMIN · PROMENADE — " + seat + "\n\"" + CIPHER_TEXT + "\"\n" + link + "\n#LastDanceWithHamin";
-  copyText(text, 'Share text copied!');
-});
-
-document.getElementById('copyLinkBtn').addEventListener('click', () => {
-  copyText(buildShareLink(), 'Invitation link copied!');
+  window.open(intentUrl, '_blank', 'noopener,noreferrer');
+  showToast('Opened X — attach your screenshot before posting 📸');
 });
 
 /* ============================================================
