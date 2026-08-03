@@ -644,13 +644,13 @@ main{ position:relative; z-index:1; }
 .egg-credits-roll{
   position:absolute; left:50%; top:100%; transform: translateX(-50%);
   width:min(560px, 88vw); text-align:center;
-  animation: creditsScroll 34s linear forwards;
+  animation: creditsScroll 70s linear forwards;
   animation-play-state: paused;
 }
 .egg-overlay.show .egg-credits-roll{ animation-play-state: running; }
 @keyframes creditsScroll{
   from{ top:100%; }
-  to{ top:-220%; }
+  to{ top:-420%; }
 }
 .egg-credits-heading{
   font-family: var(--font-display); font-size: clamp(1.3rem,3vw,1.8rem); color: var(--champagne-gold);
@@ -665,6 +665,29 @@ main{ position:relative; z-index:1; }
 .egg-credit-name{
   font-family: var(--font-serif); font-weight:600; font-size: clamp(1.1rem,2.6vw,1.5rem);
   color: var(--silver); letter-spacing:.02em;
+}
+.egg-credits-emoji{ font-size:1.3rem; letter-spacing:.15em; margin-bottom:38px; }
+.egg-credit-section-heading{
+  font-family: var(--font-body); font-size:12.5px; letter-spacing:.3em; text-transform:uppercase;
+  color: var(--champagne-gold); margin-bottom:4px;
+}
+.egg-credit-section-sub{
+  font-family: var(--font-body); font-size:10px; letter-spacing:.12em; color: var(--silver-dim);
+  margin-bottom:30px;
+}
+.egg-credit-event{ margin-bottom:38px; }
+.egg-credit-event-name{
+  font-family: var(--font-serif); font-weight:600; font-size: clamp(1.05rem,2.4vw,1.35rem);
+  color: var(--foil-light, var(--champagne-gold-light)); letter-spacing:.03em; margin-bottom:12px;
+}
+.egg-credit-role{
+  font-family: var(--font-body); font-size:9.5px; letter-spacing:.24em; text-transform:uppercase;
+  color: var(--silver-dim); margin:16px 0 8px;
+}
+.egg-credit-role:first-of-type{ margin-top:0; }
+.egg-credit-list{
+  font-family: var(--font-body); font-size:.78rem; line-height:2; color: var(--silver-2);
+  letter-spacing:.01em;
 }
 .egg-credits-closing{
   margin-top:10px; font-family: var(--font-serif); font-style:italic; color: var(--silver-dim); font-size:.95rem;
@@ -1062,7 +1085,8 @@ main{ position:relative; z-index:1; }
     <div class="egg-credits-roll" id="eggCreditsRoll">
       <div class="egg-credits-cat">🐈‍⬛</div>
       <div class="egg-credits-heading">Last Dance with Hamin</div>
-      <div class="egg-credits-heading" style="font-size:.85rem; color:var(--silver-dim); margin-bottom:40px;">A Promenade, In His Honor</div>
+      <div class="egg-credits-heading" style="font-size:.85rem; color:var(--silver-dim); margin-bottom:24px;">A Promenade, In His Honor</div>
+      <div class="egg-credits-emoji">💙💜💓❤️🖤🤍</div>
 
       <div class="egg-credit-block">
         <div class="egg-credit-dept">Executive Producers</div>
@@ -1076,9 +1100,138 @@ main{ position:relative; z-index:1; }
         <div class="egg-credit-dept">Visual Concept &amp; Art</div>
         <div class="egg-credit-name">Phantom Design</div>
       </div>
+
+      <div class="egg-credit-section-heading">Featured Events &amp; Artists</div>
+      <div class="egg-credit-section-sub">(Listed in alphabetical order)</div>
+
+      <div class="egg-credit-event">
+        <div class="egg-credit-event-name">Noah's Gym Club</div>
+        <div class="egg-credit-role">Artist</div>
+        <div class="egg-credit-list">
+          @dongnihoonikev (X)<br>
+          @eriwyu (X)<br>
+          @foo_y33 (X)<br>
+          @hanani00000 (XHS)<br>
+          @hojiyuu (IG)<br>
+          @icerimonade (X)<br>
+          @Izumiiii_2811 (X)<br>
+          @LETmeSLEEP99plz (X)<br>
+          @rairaiev (X)<br>
+          @teann_1205 (X)<br>
+          @usernotfound.xia (IG)
+        </div>
+        <div class="egg-credit-role">Lucky Draw Sponsor</div>
+        <div class="egg-credit-list">
+          @jeonjungmelle (X)<br>
+          @nochu_u7 (X)
+        </div>
+      </div>
+
+      <div class="egg-credit-event">
+        <div class="egg-credit-event-name">Rêves in MY Ast3rum</div>
+        <div class="egg-credit-role">Artist</div>
+        <div class="egg-credit-list">
+          @doogihoonikev (X)<br>
+          @eriwyu (X)<br>
+          @glacecia.skygleam (IG)<br>
+          @Izumiiii_2811 (X)<br>
+          @jean_0v0 (IG)<br>
+          @jeillyfxsh (IG)<br>
+          @jinxkai (IG)<br>
+          @k28206795 (X)<br>
+          @kkucenn (IG)<br>
+          @LETmeSLEEP99plz (X)<br>
+          @mmmflexin (IG)<br>
+          @putih_rice (IG)<br>
+          @rairaiev (IG)<br>
+          @suna.valid (IG)<br>
+          @teann_1205 (X)<br>
+          @yes_its_frey<br>
+          @yuan_is_saru
+        </div>
+      </div>
+
+      <div class="egg-credit-event">
+        <div class="egg-credit-event-name">Winner Winner Eunho Dinner</div>
+        <div class="egg-credit-role">Artist</div>
+        <div class="egg-credit-list">
+          @19kmph (IG)<br>
+          @3mincookingvibe (X)<br>
+          @arkadia_00 (X)<br>
+          @Backmiup (X)<br>
+          @cebamby (X)<br>
+          @cocakoala_zz (X)<br>
+          @Dao41Ye (X)<br>
+          @ddaiiidai (X)<br>
+          @dongihooniker (X)<br>
+          @kd6tx (X)<br>
+          @Laydown_n_rest (X)<br>
+          @Neito1010 (X)<br>
+          @Nemunemuru09 (X)<br>
+          @plave_han715 (X)<br>
+          @rairaiev (X)<br>
+          @RebusanCimol (X)<br>
+          @ruii.drawingtime_ (IG)<br>
+          @S_00_A_PL (X)<br>
+          @time_memoo (X)<br>
+          @yu.bao_53 (IG)<br>
+          @yuan_is_saru (X)<br>
+          @Yusa0751 (X)
+        </div>
+      </div>
+
+      <div class="egg-credit-event">
+        <div class="egg-credit-event-name">Bamline Gathering</div>
+        <div class="egg-credit-role">Artist / Participant</div>
+        <div class="egg-credit-list">
+          @3mincookingvibe (X)<br>
+          @Backmiup- (X)<br>
+          @CNajsul (X)<br>
+          @foo-y33 (X)<br>
+          @fqdyy- (X)<br>
+          @_hamburgsushi- (X)<br>
+          @i_am pie666 (IG)<br>
+          @koo__riya (X)<br>
+          @koukou-plave (X)<br>
+          @manmantan (IG)<br>
+          @max_eeerya (X)<br>
+          @plvchuki (X)<br>
+          @sangi_PLLI (X)<br>
+          @sangnamjabong (X)<br>
+          @sanmacoc (IG)<br>
+          @snazyros (IG)<br>
+          @teann_1205 (X)<br>
+          @time-memoo (X)<br>
+          @usernotfound.xia (IG)<br>
+          @yes_its_frey (IG)<br>
+          @yu.bao_53 (IG)<br>
+          XHS 026566205909<br>
+          XHS 03876214450<br>
+          XHS 05284925694<br>
+          XHS @959602247<br>
+          XHS @kud_zzz01
+        </div>
+        <div class="egg-credit-role">Lucky Draw Sponsor</div>
+        <div class="egg-credit-list">
+          @yu.bao_53 (IG)
+        </div>
+      </div>
+
+      <div class="egg-credit-event">
+        <div class="egg-credit-event-name">Whisper from the Deep Blue</div>
+        <div class="egg-credit-role">Artist</div>
+        <div class="egg-credit-list">(TBD)</div>
+      </div>
+
+      <div class="egg-credit-event">
+        <div class="egg-credit-event-name">Last Dance With Hamin</div>
+        <div class="egg-credit-role">Artist</div>
+        <div class="egg-credit-list">(TBD)</div>
+      </div>
+
       <div class="egg-credit-block">
-        <div class="egg-credit-dept">Special Thanks To</div>
-        <div class="egg-credit-name">All PLLIs &amp; Hamin</div>
+        <div class="egg-credit-dept">Special Thanks</div>
+        <div class="egg-credit-name">All PLLIs &amp; PLAVE</div>
       </div>
 
       <p class="egg-credits-closing">"In the quiet of the dark, the movement speaks."</p>
